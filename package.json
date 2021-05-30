@@ -1,0 +1,30 @@
+{
+  "name": "my_doctor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "cross-env NODE_ENV=Production node app.js",
+    "devstart": "cross-env NODE_ENV=development nodemon app.js"
+  },
+  "author": "Moise Rushanika",
+  "license": "ISC",
+  "dependencies": {
+    "@hapi/joi": "^17.1.1",
+    "bcrypt": "^5.0.1",
+    "body-parser": "^1.19.0",
+    "chalk": "^4.1.1",
+    "cross-env": "^7.0.3",
+    "crypto": "^1.0.1",
+    "dotenv": "^9.0.2",
+    "express": "^4.17.1",
+    "fawn": "^2.1.5",
+    "joi": "^17.4.0",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.1",
+    "mongoose": "^5.12.8",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.7"
+  }
+}

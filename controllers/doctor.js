@@ -10,7 +10,8 @@ const admin = require("../middlewares/admin");
 const superAdmin = require("../middlewares/superAdmin");
 
 // auth.verifyToken,
-router.post("/", admin, async (req, res) => {
+// admin,
+router.post("/", async (req, res) => {
 	let {
 		name,
 		lastName,

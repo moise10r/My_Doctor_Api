@@ -13,9 +13,7 @@ const connectDB = require("./config/db");
 connectDB();
 
 //middlewares
-if (process.env.NODE_ENV == "development") {
-	app.use(morgan("dev"));
-}
+app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 

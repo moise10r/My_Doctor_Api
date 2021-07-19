@@ -9,7 +9,8 @@ const auth = require("../middlewares/auth");
 const admin = require("../middlewares/admin");
 const superAdmin = require("../middlewares/superAdmin");
 
-router.post("/", auth.verifyToken, admin, async (req, res) => {
+// auth.verifyToken,
+router.post("/", admin, async (req, res) => {
 	let {
 		name,
 		lastName,
@@ -90,7 +91,8 @@ router.post("/", auth.verifyToken, admin, async (req, res) => {
 	});
 });
 
-router.put("/", auth.verifyToken, async (req, res) => {
+// auth.verifyToken,
+router.put("/", async (req, res) => {
 	let {
 		name,
 		lastName,
@@ -164,7 +166,8 @@ router.put("/", auth.verifyToken, async (req, res) => {
 
 //Admin Privileges
 //Delete doctor
-router.delete("/:id", [auth.verifyToken, admin], async (req, res) => {
+// [auth.verifyToken, admin], 
+router.delete("/:id",async (req, res) => {
 	const doctor = await Doctor.findOneAndDelete({ _id: req.params.id });
 	if (!doctor)
 		return res.status(404).send("The use with the given ID was not found.");
@@ -172,20 +175,23 @@ router.delete("/:id", [auth.verifyToken, admin], async (req, res) => {
 });
 
 //Get All doctors
-router.get("/", [auth.verifyToken, admin], async (req, res) => {
+//[auth.verifyToken, admin],
+router.get("/",  async (req, res) => {
 	const doctors = await Doctor.find();
 	if (!doctors) return res.status(404).send("There is no doctor ");
 	res.send(doctors);
 });
 //Get One doctor
-router.get("/:id", [auth.verifyToken, admin], async (req, res) => {
+// [auth.verifyToken, admin],
+router.get("/:id", async (req, res) => {
 	const doctor = await Doctor.findById({ _id: req.params.id });
 	if (!doctor)
 		return res.status(404).send("The doctor with this ID was not found. ");
 	res.status(200).send(doctor);
 });
 //Modifier doctor Profile
-router.put("/:id", [auth.verifyToken, admin], async (req, res) => {
+//[auth.verifyToken, admin], 
+router.put("/:id", async (req, res) => {
 	let {
 		name,
 		lastName,

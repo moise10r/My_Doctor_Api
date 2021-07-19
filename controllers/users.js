@@ -12,8 +12,8 @@ const admin = require("../middlewares/admin");
 const superAdmin = require("../middlewares/superAdmin");
 
 Fawn.init(mongoose);
-
-router.post("/", [auth.verifyToken, admin], async (req, res) => {
+//, [auth.verifyToken, admin]
+router.post("/", async (req, res) => {
 	const {
 		name,
 		lastName,
@@ -110,8 +110,8 @@ router.post("/", [auth.verifyToken, admin], async (req, res) => {
 		});
 	});
 });
-
-router.put("/", auth.verifyToken, async (req, res) => {
+//auth.verifyToken,
+router.put("/", async (req, res) => {
 	const {
 		name,
 		lastName,
@@ -200,7 +200,8 @@ router.put("/", auth.verifyToken, async (req, res) => {
 
 //Admin Privileges
 //Delete User
-router.delete("/:id", [auth.verifyToken, admin], async (req, res) => {
+//[auth.verifyToken, admin],
+router.delete("/:id",  async (req, res) => {
 	const user = await User.findOneAndDelete({ _id: req.params.id });
 	if (!user)
 		return res.status(404).send("The use with the given ID was not found.");
@@ -208,20 +209,23 @@ router.delete("/:id", [auth.verifyToken, admin], async (req, res) => {
 });
 
 //Get All Users
-router.get("/", [auth.verifyToken, admin], async (req, res) => {
+// [auth.verifyToken, admin], 
+router.get("/",async (req, res) => {
 	const users = await User.find();
 	if (!users) return res.status(404).send("There is no user ");
 	res.send(users);
 });
 //Get One User
-router.get("/:id", [auth.verifyToken, admin], async (req, res) => {
+//, [auth.verifyToken, admin]
+router.get("/:id", async (req, res) => {
 	const user = await User.findById({ _id: req.params.id });
 	if (!user)
 		return res.status(404).send("The User with this ID was not found. ");
 	res.status(200).send(user);
 });
 //Modifier User Profile
-router.put("/:id", [auth.verifyToken, admin], async (req, res) => {
+// [auth.verifyToken, admin],
+router.put("/:id", async (req, res) => {
 	const {
 		name,
 		lastName,

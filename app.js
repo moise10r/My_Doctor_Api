@@ -3,7 +3,8 @@ const app = express();
 const chalk = require("chalk");
 const morgan = require("morgan");
 const dotenv = require("dotenv");
-const bodyParser = require("body-parser");
+const helpmet = require('helmet');
+const compression = require('compression');
 
 //environments variables
 dotenv.config({ path: "./config/config.env" });
@@ -17,6 +18,8 @@ if (process.env.NODE_ENV == "development") {
 }
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(helmet());
+app.use(compression());
 //routes
 require("./routes/router")(app);
 const PORT = process.env.PORT || 8000;

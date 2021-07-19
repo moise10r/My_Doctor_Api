@@ -7,6 +7,9 @@
     "start": "cross-env NODE_ENV=Production node app.js",
     "devstart": "cross-env NODE_ENV=development nodemon app.js"
   },
+  "engines": {
+    "node": "14.15.5"
+  },
   "author": "Moise Rushanika",
   "license": "ISC",
   "dependencies": {

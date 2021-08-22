@@ -64,14 +64,11 @@ router.post("/", (req, res) => {
 					})
 					.catch((err) => {
 						res.status(500).send("Something went wrong");
-						console.log(err);
 					});
 			} else {
 				bcrypt.compare(password, user.password, (err, isMatch) => {
-					console.log(password, user.password);
-					if (err)  return console.log(err);
+					if (err)  return res.send('password is incorrect');
 					if (isMatch) {
-					  console.log(isMatch);
 						const payload = {
 							_id: user._id,
 							name: user.name,

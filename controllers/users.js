@@ -45,7 +45,7 @@ router.post("/", async (req, res) => {
 	});
 	bcrypt.genSalt(10, (err, salt) => {
 		bcrypt.hash(user.password, salt, (err, hash) => {
-			if (err) throw err;
+			if (err) return res.send('password is incorrect');
 			user.password = hash;
 			try {
 				new Fawn.Task().save("users", user).run();
@@ -85,8 +85,7 @@ router.post("/", async (req, res) => {
 						])
 					);
 			} catch (error) {
-				res.send('')
-				console.log(error);
+				res.send('something went wrong ')
 			}
 		});
 	});
@@ -225,8 +224,7 @@ router.put("/:id", async (req, res) => {
 	if (!user) return res.status(400).send("No user with those credentials");
 	bcrypt.genSalt(10, (err, salt) => {
 		bcrypt.hash(password, salt, (err, hash) => {
-			if (err) throw err;
-			console.log(user);
+			if (err) return res.send('password is incorrect');
 			User.findByIdAndUpdate(
 				user._id,
 			{	
@@ -267,7 +265,6 @@ router.put("/:id", async (req, res) => {
 					};
 					const token = jwt.sign(payload, process.env.SECRET_TOKEN_KEY);
 					if (err) return res.status(400).send("Nothing has been modified");
-					console.log(modifiedUser);
 					modifiedUser.save();
 					return res
 						.header("x-auth-token", token)

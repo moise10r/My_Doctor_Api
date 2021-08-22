@@ -29,7 +29,7 @@ const usersSchema = new mongoose.Schema({
 		type: String,
 	},
 	age: {
-		type: Number,
+		type: String,
 	},
 	profileImage: {
 		type: String,
@@ -48,7 +48,7 @@ const usersSchema = new mongoose.Schema({
 		maxlength: 50,
 	},
 	streetNumber: {
-		type: Number,
+		type: String,
 		minlength: 3,
 		maxlength: 1000,
 	},

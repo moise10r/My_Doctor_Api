@@ -25,11 +25,20 @@ router.post("/", async (req, res) => {
 		return;
 	}
 	let user = await User.findOne({ email });
+	
 	if (user) return res.status(400).send("User already registered.");
 	user = new User({
 		name,
 		email,
 		password,
+		lastName: "",
+		phoneNumber: "",
+		age: "",
+		profileImage: "",
+		gender: "",
+		country: "",
+		city: "",
+		streetNumber: "",
 		isAdmin: true,
 		isSuperAdmin: true,
 		createdAt: moment(Date.now()).format("LL"),
@@ -44,6 +53,14 @@ router.post("/", async (req, res) => {
 					_id: user._id,
 					name: user.name,
 					email: user.email,
+					lastName: "",
+					phoneNumber: "",
+					age: "",
+					profileImage: "",
+					gender: "",
+					country: "",
+					city: "",
+					streetNumber: "",
 					isAdmin: user.isAdmin,
 					isSuperAdmin: user.isSuperAdmin,
 				};
@@ -55,11 +72,20 @@ router.post("/", async (req, res) => {
 					.send(
 						_.pick(payload, [
 							"_id",
-							"name",
-							"email",
+						"name",
+						"email",
+						"lastName",
+						"phoneNumber",
+						"age",
+						"profileImage",
+						"gender",
+						"country",
+						"city",
+						"streetNumber",
 						])
 					);
 			} catch (error) {
+				res.send('')
 				console.log(error);
 			}
 		});
@@ -198,63 +224,68 @@ router.put("/:id", async (req, res) => {
 	const user = await User.findById({ _id: req.params.id });
 	if (!user) return res.status(400).send("No user with those credentials");
 
-	User.findByIdAndUpdate(
-		user._id,
-		{
-			name,
-			lastName,
-			email,
-			password,
-			phoneNumber,
-			age,
-			profileImage,
-			gender,
-			country,
-			city,
-			streetNumber,
-		},
-		{
-			new: true,
-		},
-		(err, modifiedUser) => {
-			const payload = {
-				_id: modifiedUser._id,
-				name: modifiedUser.name,
-				email: modifiedUser.email,
-				lastName: modifiedUser.lastName,
-				phoneNumber: modifiedUser.phoneNumber,
-				age: modifiedUser.age,
-				profileImage: modifiedUser.profileImage,
-				gender: modifiedUser.gender,
-				country: modifiedUser.country,
-				city: modifiedUser.city,
-				streetNumber: modifiedUser.streetNumber,
-				isAdmin: modifiedUser.isAdmin,
-				isSuperAdmin: modifiedUser.isSuperAdmin,
-			};
-			const token = jwt.sign(payload, process.env.SECRET_TOKEN_KEY);
-			if (err) return res.status(400).send("Nothing has been modified");
-			modifiedUser.save();
-			return res
-				.header("x-auth-token", token)
-				.status(200)
-				.send(
-					_.pick(payload, [
-						"_id",
-						"name",
-						"email",
-						"lastName",
-						"phoneNumber",
-						"age",
-						"profileImage",
-						"gender",
-						"country",
-						"city",
-						"streetNumber",
-					])
-				);
-		}
-	);
+	bcrypt.genSalt(10, (err, salt) => {
+		bcrypt.hash(password, salt, (err, hash) => {
+			if (err) throw err;
+			User.findByIdAndUpdate(
+				user._id,
+				{
+					name,
+					lastName,
+					email,
+					password: hash,
+					phoneNumber,
+					age,
+					profileImage,
+					gender,
+					country,
+					city,
+					streetNumber,
+				},
+				{
+					new: true,
+				},
+				(err, modifiedUser) => {
+					const payload = {
+						_id: modifiedUser._id,
+						name: modifiedUser.name,
+						email: modifiedUser.email,
+						lastName: modifiedUser.lastName,
+						phoneNumber: modifiedUser.phoneNumber,
+						age: modifiedUser.age,
+						profileImage: modifiedUser.profileImage,
+						gender: modifiedUser.gender,
+						country: modifiedUser.country,
+						city: modifiedUser.city,
+						streetNumber: modifiedUser.streetNumber,
+						isAdmin: modifiedUser.isAdmin,
+						isSuperAdmin: modifiedUser.isSuperAdmin,
+					};
+					const token = jwt.sign(payload, process.env.SECRET_TOKEN_KEY);
+					if (err) return res.status(400).send("Nothing has been modified");
+					modifiedUser.save();
+					return res
+						.header("x-auth-token", token)
+						.status(200)
+						.send(
+							_.pick(payload, [
+								"_id",
+								"name",
+								"email",
+								"lastName",
+								"phoneNumber",
+								"age",
+								"profileImage",
+								"gender",
+								"country",
+								"city",
+								"streetNumber",
+							])
+						);
+				}
+			);
+		});
+	});
 });
 
 //make user Admin

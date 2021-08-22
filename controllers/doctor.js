@@ -14,13 +14,8 @@ const superAdmin = require("../middlewares/superAdmin");
 router.post("/", async (req, res) => {
 	let {
 		name,
-		lastName,
 		email,
-		doctorName,
 		password,
-		role,
-		phoneNumber,
-		profileImage,
 	} = req.body;
 	const validation = validateDoctor(req.body);
 	if (validation.error) {
@@ -32,21 +27,13 @@ router.post("/", async (req, res) => {
 			{
 				email,
 			},
-			{
-				doctorName,
-			},
 		],
 	});
 	if (doctor) return res.status(400).send("doctor already registered.");
 	doctor = new Doctor({
 		name,
-		lastName,
 		email,
-		doctorName,
 		password,
-		role,
-		phoneNumber,
-		profileImage,
 		createdAt: moment(Date.now()).format("LL"),
 	});
 	bcrypt.genSalt(10, (err, salt) => {
@@ -58,13 +45,7 @@ router.post("/", async (req, res) => {
 				const payload = {
 					_id: doctor._id,
 					name: doctor.name,
-					doctorName: doctor.doctorName,
 					email: doctor.email,
-					lastName: doctor.lastName,
-					role: doctor.role,
-					phoneNumber: doctor.phoneNumber,
-					profileImage: doctor.profileImage,
-					streetNumber: doctor.streetNumber,
 					isAdmin: doctor.isAdmin,
 					isSuperAdmin: doctor.isSuperAdmin,
 				};
@@ -77,12 +58,7 @@ router.post("/", async (req, res) => {
 						_.pick(payload, [
 							"_id",
 							"name",
-							"doctorName",
 							"email",
-							"lastName",
-							"profileImage",
-							"role",
-							"phoneNumber",
 						])
 					);
 			} catch (error) {
@@ -98,7 +74,6 @@ router.put("/", async (req, res) => {
 		name,
 		lastName,
 		email,
-		doctorName,
 		password,
 		role,
 		phoneNumber,
@@ -119,7 +94,6 @@ router.put("/", async (req, res) => {
 			name,
 			lastName,
 			email,
-			doctorName,
 			password,
 			role,
 			phoneNumber,
@@ -132,7 +106,6 @@ router.put("/", async (req, res) => {
 			const payload = {
 				_id: doctor._id,
 				name: doctor.name,
-				doctorName: doctor.doctorName,
 				email: doctor.email,
 				lastName: doctor.lastName,
 				role: doctor.role,
@@ -153,7 +126,6 @@ router.put("/", async (req, res) => {
 					_.pick(payload, [
 						"_id",
 						"name",
-						"doctorName",
 						"email",
 						"lastName",
 						"profileImage",
@@ -197,7 +169,6 @@ router.put("/:id", async (req, res) => {
 		name,
 		lastName,
 		email,
-		doctorName,
 		password,
 		role,
 		phoneNumber,
@@ -217,7 +188,6 @@ router.put("/:id", async (req, res) => {
 			name,
 			lastName,
 			email,
-			doctorName,
 			password,
 			role,
 			phoneNumber,
@@ -230,7 +200,6 @@ router.put("/:id", async (req, res) => {
 			const payload = {
 				_id: doctor._id,
 				name: doctor.name,
-				doctorName: doctor.doctorName,
 				email: doctor.email,
 				lastName: doctor.lastName,
 				role: doctor.role,
@@ -251,7 +220,6 @@ router.put("/:id", async (req, res) => {
 					_.pick(payload, [
 						"_id",
 						"name",
-						"doctorName",
 						"email",
 						"lastName",
 						"profileImage",

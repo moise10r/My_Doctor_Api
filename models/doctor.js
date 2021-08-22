@@ -10,7 +10,6 @@ const doctorsSchema = new mongoose.Schema({
 	},
 	lastName: {
 		type: String,
-		required: true,
 		minlength: 3,
 		maxlength: 50,
 	},
@@ -21,16 +20,8 @@ const doctorsSchema = new mongoose.Schema({
 		maxlength: 255,
 		unique: true,
 	},
-	doctorName: {
-		type: String,
-		require: true,
-		minlength: 5,
-		maxlength: 255,
-		unique: true,
-	},
 	role: {
 		type: String,
-		required: true,
 	},
 	password: {
 		type: String,
@@ -40,7 +31,6 @@ const doctorsSchema = new mongoose.Schema({
 	},
 	phoneNumber: {
 		type: String,
-		required: true,
 	},
 
 	profileImage: {
@@ -56,7 +46,6 @@ const doctorsSchema = new mongoose.Schema({
 	},
 	createdAt: {
 		type: String,
-		required: true,
 	},
 });
 
@@ -66,7 +55,6 @@ function validateDoctor(doctor) {
 		name: Joi.string().min(2).max(50).required(),
 		lastName: Joi.string().min(2).max(50).required(),
 		email: Joi.string().min(2).max(50).required().email(),
-		doctorName: Joi.string().min(5).max(255).required(),
 		role: Joi.string().min(5).max(255).required(),
 		password: Joi.string().min(5).max(255).required(),
 		phoneNumber: Joi.string().required(),

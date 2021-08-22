@@ -16,47 +16,20 @@ Fawn.init(mongoose);
 router.post("/", async (req, res) => {
 	const {
 		name,
-		lastName,
 		email,
-		username,
 		password,
-		phoneNumber,
-		age,
-		profileImage,
-		gender,
-		country,
-		city,
-		streetNumber,
 	} = req.body;
 	const validation = validateUser(req.body);
 	if (validation.error) {
 		res.status(400).send(validation.error.details[0].message);
 		return;
 	}
-	let user = await User.findOne({
-		$or: [
-			{
-				email: req.body.email,
-			},
-			{
-				username: req.body.username,
-			},
-		],
-	});
+	let user = await User.findOne({ email });
 	if (user) return res.status(400).send("User already registered.");
 	user = new User({
 		name,
-		lastName,
 		email,
-		username,
 		password,
-		phoneNumber,
-		age,
-		profileImage,
-		gender,
-		country,
-		city,
-		streetNumber,
 		isAdmin: true,
 		isSuperAdmin: true,
 		createdAt: moment(Date.now()).format("LL"),
@@ -70,16 +43,7 @@ router.post("/", async (req, res) => {
 				const payload = {
 					_id: user._id,
 					name: user.name,
-					username: user.username,
 					email: user.email,
-					lastName: user.lastName,
-					phoneNumber: user.phoneNumber,
-					age: user.age,
-					profileImage: user.profileImage,
-					gender: user.gender,
-					country: user.country,
-					city: user.city,
-					streetNumber: user.streetNumber,
 					isAdmin: user.isAdmin,
 					isSuperAdmin: user.isSuperAdmin,
 				};
@@ -92,16 +56,7 @@ router.post("/", async (req, res) => {
 						_.pick(payload, [
 							"_id",
 							"name",
-							"username",
 							"email",
-							"lastName",
-							"phoneNumber",
-							"age",
-							"profileImage",
-							"gender",
-							"country",
-							"city",
-							"streetNumber",
 						])
 					);
 			} catch (error) {
@@ -116,7 +71,6 @@ router.put("/", async (req, res) => {
 		name,
 		lastName,
 		email,
-		username,
 		password,
 		phoneNumber,
 		age,
@@ -141,7 +95,6 @@ router.put("/", async (req, res) => {
 			name,
 			lastName,
 			email,
-			username,
 			password,
 			phoneNumber,
 			age,
@@ -158,7 +111,6 @@ router.put("/", async (req, res) => {
 			const payload = {
 				_id: modifiedUser._id,
 				name: modifiedUser.name,
-				username: modifiedUser.username,
 				email: modifiedUser.email,
 				lastName: modifiedUser.lastName,
 				phoneNumber: modifiedUser.phoneNumber,
@@ -182,7 +134,6 @@ router.put("/", async (req, res) => {
 					_.pick(payload, [
 						"_id",
 						"name",
-						"username",
 						"email",
 						"lastName",
 						"phoneNumber",
@@ -230,7 +181,6 @@ router.put("/:id", async (req, res) => {
 		name,
 		lastName,	
 		email,
-		username,
 		password,
 		phoneNumber,
 		age,
@@ -254,7 +204,6 @@ router.put("/:id", async (req, res) => {
 			name,
 			lastName,
 			email,
-			username,
 			password,
 			phoneNumber,
 			age,
@@ -271,7 +220,6 @@ router.put("/:id", async (req, res) => {
 			const payload = {
 				_id: modifiedUser._id,
 				name: modifiedUser.name,
-				username: modifiedUser.username,
 				email: modifiedUser.email,
 				lastName: modifiedUser.lastName,
 				phoneNumber: modifiedUser.phoneNumber,
@@ -294,7 +242,6 @@ router.put("/:id", async (req, res) => {
 					_.pick(payload, [
 						"_id",
 						"name",
-						"username",
 						"email",
 						"lastName",
 						"phoneNumber",

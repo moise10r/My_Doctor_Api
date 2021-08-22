@@ -18,28 +18,10 @@ router.post("/", (req, res) => {
 		res.status(400).send(validation.error.details[0].message);
 		return;
 	}
-	User.findOne({
-		$or: [
-			{
-				email: email,
-			},
-			{
-				username: email,
-			},
-		],
-	})
-		.then((user) => {
-			if (!user) {
-				Doctor.findOne({
-					$or: [
-						{
-							email: email,
-						},
-						{
-							doctorName: email,
-						},
-					],
-				})
+	User.findOne({ email })
+	.then((user) => {
+		if (!user) {
+			Doctor.findOne({ email })
 					.then((doctor) => {
 						if (!doctor)
 							return res
@@ -52,7 +34,6 @@ router.post("/", (req, res) => {
 								const payload = {
 									_id: doctor._id,
 									name: doctor.name,
-									doctorName: doctor.doctorName,
 									email: doctor.email,
 									lastName: doctor.lastName,
 									phoneNumber: doctor.phoneNumber,
@@ -69,7 +50,6 @@ router.post("/", (req, res) => {
 										_.pick(payload, [
 											"_id",
 											"name",
-											"doctorName",
 											"email",
 											"lastName",
 											"phoneNumber",
@@ -88,13 +68,13 @@ router.post("/", (req, res) => {
 					});
 			} else {
 				bcrypt.compare(password, user.password, (err, isMatch) => {
-					if (err) throw err;
-
+					console.log(password, user.password);
+					if (err)  return console.log(err);
 					if (isMatch) {
+					  console.log(isMatch);
 						const payload = {
 							_id: user._id,
 							name: user.name,
-							username: user.username,
 							email: user.email,
 							lastName: user.lastName,
 							phoneNumber: user.phoneNumber,
@@ -115,7 +95,6 @@ router.post("/", (req, res) => {
 								_.pick(payload, [
 									"_id",
 									"name",
-									"username",
 									"email",
 									"lastName",
 									"phoneNumber",

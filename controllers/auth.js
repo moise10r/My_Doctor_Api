@@ -26,7 +26,7 @@ router.post("/", (req, res) => {
 						if (!doctor)
 							return res
 								.status(400)
-								.send("email or password incorrect");
+								.send("email or password is incorrect");
 						bcrypt.compare(password, doctor.password, (err, isMatch) => {
 							if (err) throw err;
 
@@ -58,7 +58,7 @@ router.post("/", (req, res) => {
 										])
 									);
 							} else {
-								return res.status(401).send("email or password incorrect ");
+								return res.status(401).send("email or password is incorrect ");
 							}
 						});
 					})
@@ -104,7 +104,7 @@ router.post("/", (req, res) => {
 								])
 							);
 					} else {
-						return res.status(401).send("email or password incorrect ");
+						return res.status(401).send("email or password is incorrect ");
 					}
 				});
 			}

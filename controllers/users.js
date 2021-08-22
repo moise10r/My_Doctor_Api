@@ -223,27 +223,31 @@ router.put("/:id", async (req, res) => {
 	}
 	const user = await User.findById({ _id: req.params.id });
 	if (!user) return res.status(400).send("No user with those credentials");
-
 	bcrypt.genSalt(10, (err, salt) => {
 		bcrypt.hash(password, salt, (err, hash) => {
 			if (err) throw err;
+			console.log(user);
 			User.findByIdAndUpdate(
 				user._id,
-				{
-					name,
-					lastName,
-					email,
+			{	
+				$set : {
+					name: name || user.name,
+					lastName: lastName || user.lastName,
+					email:email ||  user.email,
 					password: hash,
-					phoneNumber,
-					age,
-					profileImage,
-					gender,
-					country,
-					city,
-					streetNumber,
-				},
+					phoneNumber: phoneNumber || user.phoneNumber,
+					age: age || user.age ,
+					profileImage: profileImage || user.profileImage,
+					gender:  gender || user.gender,
+					country: country || user.country ,
+					city: city || user.city ,
+					streetNumber: streetNumber || user.streetNumber,
+				}
+			},
 				{
-					new: true,
+					upsert: true, 
+					new: true
+
 				},
 				(err, modifiedUser) => {
 					const payload = {
@@ -263,6 +267,7 @@ router.put("/:id", async (req, res) => {
 					};
 					const token = jwt.sign(payload, process.env.SECRET_TOKEN_KEY);
 					if (err) return res.status(400).send("Nothing has been modified");
+					console.log(modifiedUser);
 					modifiedUser.save();
 					return res
 						.header("x-auth-token", token)

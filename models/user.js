@@ -39,17 +39,14 @@ const usersSchema = new mongoose.Schema({
 	},
 	country: {
 		type: String,
-		minlength: 3,
 		maxlength: 50,
 	},
 	city: {
 		type: String,
-		minlength: 3,
 		maxlength: 50,
 	},
 	streetNumber: {
 		type: String,
-		minlength: 3,
 		maxlength: 1000,
 	},
 	isSuperAdmin: {
@@ -68,17 +65,17 @@ const usersSchema = new mongoose.Schema({
 const User = mongoose.model("users", usersSchema);
 function validateUser(user) {
 	const schema = Joi.object().keys({
-		name: Joi.string().min(2).max(50).required(),
-		email: Joi.string().min(2).max(50).required().email(),
+		name: Joi.string().max(50).required(),
+		email: Joi.string().max(50).required().email(),
 		password: Joi.string().min(5).max(255).required(),
-		lastName: Joi.string().min(2).max(50),
+		lastName: Joi.string().max(50),
 		phoneNumber: Joi.string(),
 		age: Joi.number().min(5).max(255),
 		profileImage: Joi.string(),
 		gender: Joi.string(),
-		country: Joi.string().min(2).max(50),
-		city: Joi.string().min(2).max(50),
-		streetNumber: Joi.number().min(2).max(1000),
+		country: Joi.string().max(50),
+		city: Joi.string().max(50),
+		streetNumber: Joi.number().max(1000),
 	});
 	return schema.validate(user);
 }

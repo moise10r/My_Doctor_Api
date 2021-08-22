@@ -25,7 +25,7 @@ router.post("/", (req, res) => {
 					.then((doctor) => {
 						if (!doctor)
 							return res
-								.status(400)
+								.status(404)
 								.send("email or password is incorrect");
 						bcrypt.compare(password, doctor.password, (err, isMatch) => {
 							if (err) throw err;
@@ -63,7 +63,7 @@ router.post("/", (req, res) => {
 						});
 					})
 					.catch((err) => {
-						res.status(500).send("Something went wrong");
+						res.status(404).send("Something went wrong");
 					});
 			} else {
 				bcrypt.compare(password, user.password, (err, isMatch) => {
@@ -109,7 +109,7 @@ router.post("/", (req, res) => {
 				});
 			}
 		})
-		.catch((err) => console.log(err));
+		.catch((err) => res.send('something went wrong').status(404));
 });
 
 module.exports = router;

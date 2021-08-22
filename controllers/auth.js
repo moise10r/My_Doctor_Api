@@ -26,7 +26,7 @@ router.post("/", (req, res) => {
 						if (!doctor)
 							return res
 								.status(400)
-								.send("user with those cridentials does not exist");
+								.send("email or password incorrect");
 						bcrypt.compare(password, doctor.password, (err, isMatch) => {
 							if (err) throw err;
 

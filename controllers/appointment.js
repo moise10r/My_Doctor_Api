@@ -19,9 +19,14 @@ router.post('/:doctorId', [verifyToken], async(req, res) => {
   const doctor = await Doctor.findById({ _id: req.params.doctorId });
   if(!doctor) return res.status(404).send('The doctor with this Id does not exist');
   console.log("doctorId", doctor._id);
-  let appointment = await Appointment.find();
+  console.log(date);
+  let appointment = await Appointment.findOne({
+    $and: [
+      {"doctor._id":doctor._id },
+      { date },
+    ]});
   console.log("appointment", appointment);
-  // if(!appointment) return res.status(404).send('This appointement has been yet taken ');
+  if(appointment) return res.status(404).send('This appointement has been yet taken ');
   appointment =  new Appointment({
     doctor: {
       _id: doctor._id,

@@ -51,13 +51,13 @@ router.post('/:doctorId', [verifyToken], async(req, res) => {
 });
 
 router.get('/all', async(req, res) => {
-  let appointement = await Appointment.find();
-  if(!appointement) return res.send('No appointement taken!');
-  return res.status(200).send(appointement);
+  const appointements = await Appointment.find();
+  if(!appointements) return res.send('No appointement taken!');
+  return res.status(200).send(appointements);
 });
 
 router.get('/:doctorId/all', async(req, res) => {
-  let appointement = await Appointment.find({ "doctor._id": req.params.doctorId });
+  const appointement = await Appointment.find({ "doctor._id": req.params.doctorId });
   if(!appointement) return res.send('No appointement taken!');
   res.status(200).send(appointement);
 });

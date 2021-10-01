@@ -22,9 +22,9 @@ router.post('/:doctorId', [verifyToken], async(req, res) => {
   console.log(date);
   let appointment = await Appointment.findOne({
     $and: [
-      {"doctor._id":doctor._id },
       { date },
-      { time }
+      { time },
+      {"doctor._id":doctor._id },
     ]});
   console.log("appointment", appointment);
   if(appointment) return res.status(404).send('This appointement has been yet taken ');

@@ -52,12 +52,14 @@ router.post('/:doctorId', [verifyToken], async(req, res) => {
 
 router.get('/all', async(req, res) => {
   let appointement = await Appointment.find();
-  res.send(appointement);
+  if(!appointement) return res.send('No appointement taken!');
+  return res.status(200).send(appointement);
 });
 
 router.get('/:doctorId/all', async(req, res) => {
   let appointement = await Appointment.find({ "doctor._id": req.params.doctorId });
-  res.send(appointement);
+  if(!appointement) return res.send('No appointement taken!');
+  res.status(200).send(appointement);
 });
 
 module.exports = router;

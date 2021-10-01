@@ -75,13 +75,13 @@ router.get('/all', async(req, res) => {
   return res.status(200).send(appointements);
 });
 
-router.get('/:doctorId', async(req, res) => {
+router.get('/doctors/:doctorId', async(req, res) => {
   const appointement = await Appointment.find({ "doctor._id": req.params.doctorId });
   if(!appointement) return res.send('No appointement taken!');
   res.status(200).send(appointement);
 });
 
-router.get('/:patientId', async(req, res) => {
+router.get('/patients/:patientId', async(req, res) => {
   const appointement = await Appointment.find({ "patient._id": req.params.patientId });
   if(!appointement) return res.send('No appointement taken!');
   res.status(200).send(appointement);

@@ -31,13 +31,15 @@ router.get('/', [verifyToken], async(req, res) => {
   let appointements;
   if(doctor) {
     appointements = await Appointment.find({ "doctor._id": req.user._id});
-    res.status(200).send(appointements);
+    return res.status(200).send(appointements);
   } 
   if(user) {
     appointements = await Appointment.find({ "patient._id": req.user._id});
-    res.status(200).send(appointements);
+    return res.status(200).send(appointements);
+  } else {
+    return res.status(400).send('This credential does not exist!');
   }
-  res.status(400).send('This credential does not exist!');
+
 });
 
 router.post('/:doctorId', [verifyToken], async(req, res) => {

@@ -24,6 +24,7 @@ router.post('/:doctorId', [verifyToken], async(req, res) => {
     $and: [
       {"doctor._id":doctor._id },
       { date },
+      { time }
     ]});
   console.log("appointment", appointment);
   if(appointment) return res.status(404).send('This appointement has been yet taken ');
@@ -51,6 +52,11 @@ router.post('/:doctorId', [verifyToken], async(req, res) => {
 
 router.get('/all', async(req, res) => {
   let appointement = await Appointment.find();
+  res.send(appointement);
+});
+
+router.get('/:doctorId/all', async(req, res) => {
+  let appointement = await Appointment.find({ "doctor._id": req.params.doctorId });
   res.send(appointement);
 });
 

@@ -5,6 +5,7 @@ const morgan = require("morgan");
 const dotenv = require("dotenv");
 const helmet = require('helmet');
 const compression = require('compression');
+const cors =  require("cors");
 
 //environments variables
 dotenv.config({ path: "./config/config.env" });
@@ -16,6 +17,7 @@ connectDB();
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cors());
 
 //routes
 require("./routes/router")(app);

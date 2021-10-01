@@ -8,6 +8,38 @@ const Fawn =  require('fawn');
 const { Appointment, validateAppointement } = require('../models/appointment');
 const { verifyToken } = require('../middlewares/auth');
 
+
+// router.get('/patient', async(req, res) => {
+//   const user = await User.findOne({ _id: req.user._id});
+//   if(!user) return res.send('The user with that credential does not exist!');
+//   const appointement = await Appointment.find({ "patient._id": req.user._id});
+//   if(!appointement) return res.send('No appointement taken');
+//   return res.status(200).send(appointements);
+// });
+
+// router.get('/doctor', async(req, res) => {
+//   const doctor = await Doctor.findOne({ _id: req.user._id});
+//   if(!doctor) return res.send('The doctor with that credential does not exist!');
+//   const appointement = await Appointment.find({ "doctor._id": req.user._id});
+//   if(!appointement) return res.send('No appointement taken');
+//   return res.status(200).send(appointements);
+// });
+
+router.get('/', [verifyToken], async(req, res) => {
+  const doctor = await Doctor.findOne({ _id: req.user._id});
+  const user = await User.findOne({ _id: req.user._id});
+  let appointements;
+  if(doctor) {
+    appointements = await Appointment.find({ "doctor._id": req.user._id});
+    res.status(200).send(appointements);
+  } 
+  if(user) {
+    appointements = await Appointment.find({ "patient._id": req.user._id});
+    res.status(200).send(appointements);
+  }
+  res.status(400).send('This credential does not exist!');
+});
+
 router.post('/:doctorId', [verifyToken], async(req, res) => {
   const { date, time } = req.body;
   const validate = validateAppointement(req.body);
@@ -50,16 +82,23 @@ router.post('/:doctorId', [verifyToken], async(req, res) => {
   }
 });
 
+
 router.get('/all', async(req, res) => {
   const appointements = await Appointment.find();
   if(!appointements) return res.send('No appointement taken!');
   return res.status(200).send(appointements);
 });
 
-router.get('/:doctorId/all', async(req, res) => {
-  const appointement = await Appointment.find({ "doctor._id": req.params.doctorId });
-  if(!appointement) return res.send('No appointement taken!');
-  res.status(200).send(appointement);
-});
+// router.get('/:doctorId/all', async(req, res) => {
+//   const appointement = await Appointment.find({ "doctor._id": req.params.doctorId });
+//   if(!appointement) return res.send('No appointement taken!');
+//   res.status(200).send(appointement);
+// });
+
+// router.get('/:patientId/all', async(req, res) => {
+//   const appointement = await Appointment.find({ "patient._id": req.params.patientId });
+//   if(!appointement) return res.send('No appointement taken!');
+//   res.status(200).send(appointement);
+// });
 
 module.exports = router;

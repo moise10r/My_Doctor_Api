@@ -53,12 +53,12 @@ const Doctor = mongoose.model("doctors", doctorsSchema);
 function validateDoctor(doctor) {
 	const schema = Joi.object().keys({
 		name: Joi.string().min(2).max(50).required(),
-		lastName: Joi.string().min(2).max(50).required(),
+		lastName: Joi.string().min(2).max(50),
 		email: Joi.string().min(2).max(50).required().email(),
-		role: Joi.string().min(5).max(255).required(),
+		role: Joi.string().min(5).max(255),
 		password: Joi.string().min(5).max(255).required(),
-		phoneNumber: Joi.string().required(),
-		profileImage: Joi.string().required(),
+		phoneNumber: Joi.string(),
+		profileImage: Joi.string(),
 	});
 	return schema.validate(doctor);
 }

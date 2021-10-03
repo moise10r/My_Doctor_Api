@@ -19,7 +19,7 @@ router.post("/", async (req, res) => {
 	} = req.body;
 	const validation = validateDoctor(req.body);
 	if (validation.error) {
-		res.status(400).send(validation.error.details[0].message);
+		res.header('x-auth-token').status(400).send(validation.error.details[0].message);
 		return;
 	}
 	let doctor = await Doctor.findOne({
@@ -29,7 +29,7 @@ router.post("/", async (req, res) => {
 			},
 		],
 	});
-	if (doctor) return res.status(400).send("doctor already registered.");
+	if (doctor) return res.header('x-auth-token').status(400).send("doctor already registered.");
 	doctor = new Doctor({
 		name,
 		email,
@@ -62,7 +62,7 @@ router.post("/", async (req, res) => {
 						])
 					);
 			} catch (error) {
-				res.send("Something went wrong");
+				res.header('x-auth-token').send("Something went wrong");
 			}
 		});
 	});
@@ -81,12 +81,12 @@ router.put("/", async (req, res) => {
 	} = req.body;
 	const validation = validatedoctor(req.body);
 	if (validation.error) {
-		res.status(400).send(validation.error.details[0].message);
+		res.header('x-auth-token').status(400).send(validation.error.details[0].message);
 		return;
 	}
 	const newDoctor = req.doctor;
 	const doctor = await Doctor.findById({ _id: newDoctor._id });
-	if (!doctor) return res.status(400).send("No doctor with those credentials");
+	if (!doctor) return res.header('x-auth-token').status(400).send("No doctor with those credentials");
 
 	doctor.findByIdAndUpdate(
 		newDoctor._id,
@@ -117,7 +117,7 @@ router.put("/", async (req, res) => {
 			};
 			const token = jwt.sign(payload, process.env.SECRET_TOKEN_KEY);
 			console.log(token);
-			if (err) return res.status(400).send("Nothing has been modified");
+			if (err) return res.header('x-auth-token').status(400).send("Nothing has been modified");
 			modifiedDoctor.save();
 			return res
 				.header("x-auth-token", token)
@@ -143,24 +143,24 @@ router.put("/", async (req, res) => {
 router.delete("/:id",async (req, res) => {
 	const doctor = await Doctor.findOneAndDelete({ _id: req.params.id });
 	if (!doctor)
-		return res.status(404).send("The use with the given ID was not found.");
-	res.send(doctor);
+		return res.header('x-auth-token').status(404).send("The use with the given ID was not found.");
+	res.header('x-auth-token').send(doctor);
 });
 
 //Get All doctors
 //[auth.verifyToken, admin],
 router.get("/",  async (req, res) => {
 	const doctors = await Doctor.find();
-	if (!doctors) return res.status(404).send("There is no doctor ");
-	res.send(doctors);
+	if (!doctors) return res.header('x-auth-token').status(404).send("There is no doctor ");
+	res.header('x-auth-token').send(doctors);
 });
 //Get One doctor
 // [auth.verifyToken, admin],
 router.get("/:id", async (req, res) => {
 	const doctor = await Doctor.findById({ _id: req.params.id });
 	if (!doctor)
-		return res.status(404).send("The doctor with this ID was not found. ");
-	res.status(200).send(doctor);
+		return res.header('x-auth-token').status(404).send("The doctor with this ID was not found. ");
+	res.header('x-auth-token').status(200).send(doctor);
 });
 //Modifier doctor Profile
 //[auth.verifyToken, admin], 
@@ -176,11 +176,11 @@ router.put("/:id", async (req, res) => {
 	} = req.body;
 	const validation = validatedoctor(req.body);
 	if (validation.error) {
-		res.status(400).send(validation.error.details[0].message);
+		res.header('x-auth-token').status(400).send(validation.error.details[0].message);
 		return;
 	}
 	const doctor = await Doctor.findById({ _id: req.params.id });
-	if (!doctor) return res.status(400).send("No doctor with those credentials");
+	if (!doctor) return res.header('x-auth-token').status(400).send("No doctor with those credentials");
 
 	doctor.findByIdAndUpdate(
 		doctor._id,
@@ -211,7 +211,7 @@ router.put("/:id", async (req, res) => {
 			};
 			const token = jwt.sign(payload, process.env.SECRET_TOKEN_KEY);
 			console.log(token);
-			if (err) return res.status(400).send("Nothing has been modified");
+			if (err) return res.header('x-auth-token').status(400).send("Nothing has been modified");
 			modifiedDoctor.save();
 			return res
 				.header("x-auth-token", token)

@@ -15,7 +15,7 @@ router.post("/", (req, res) => {
 	});
 	const validation = schema.validate(req.body);
 	if (validation.error) {
-		res.status(400).send(validation.error.details[0].message);
+		res.header('x-auth-token').status(400).send(validation.error.details[0].message);
 		return;
 	}
 	User.findOne({ email })
@@ -58,16 +58,16 @@ router.post("/", (req, res) => {
 										])
 									);
 							} else {
-								return res.status(401).send("email or password is incorrect ");
+								return res.header('x-auth-token').status(401).send("email or password is incorrect ");
 							}
 						});
 					})
 					.catch((err) => {
-						res.status(404).send("Something went wrong");
+						res.header('x-auth-token').status(404).send("Something went wrong");
 					});
 			} else {
 				bcrypt.compare(password, user.password, (err, isMatch) => {
-					if (err)  return res.send('password is incorrect');
+					if (err)  return res.header('x-auth-token').send('password is incorrect');
 					if (isMatch) {
 						const payload = {
 							_id: user._id,
@@ -104,12 +104,12 @@ router.post("/", (req, res) => {
 								])
 							);
 					} else {
-						return res.status(401).send("email or password is incorrect ");
+						return res.header('x-auth-token').status(401).send("email or password is incorrect ");
 					}
 				});
 			}
 		})
-		.catch((err) => res.send('something went wrong').status(404));
+		.catch((err) => res.header('x-auth-token').send('something went wrong').status(404));
 });
 
 module.exports = router;

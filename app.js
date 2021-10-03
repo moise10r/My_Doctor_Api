@@ -20,6 +20,11 @@ app.use(express.json());
 
 //routes
 app.use(cors());
+app.use(function(req, res, next) {
+	res.header("Access-Control-Allow-Origin", "*");
+	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+	next();
+});
 require("./routes/router")(app);
 app.use(helmet());
 app.use(compression());

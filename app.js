@@ -19,10 +19,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 //routes
+app.use(cors());
 require("./routes/router")(app);
 app.use(helmet());
 app.use(compression());
-app.use(cors());
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {

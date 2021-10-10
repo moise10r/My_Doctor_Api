@@ -21,8 +21,8 @@ const usersSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['active', 'inactive', 'pending'],
-    default: 'pending',
+    enum: ['Active', 'Inactive', 'Pending'],
+    default: 'Pending',
   },
   password: {
     type: String,
@@ -78,14 +78,33 @@ function validateUser(user) {
     password: Joi.string().min(5).max(255).required(),
     lastName: Joi.string().max(50),
     phoneNumber: Joi.string(),
-    age: Joi.number().min(5).max(255),
+    age: Joi.string().max(255),
     profileImage: Joi.string(),
     gender: Joi.string(),
     country: Joi.string().max(50),
     city: Joi.string().max(50),
-    streetNumber: Joi.number().max(1000),
+    streetNumber: Joi.string().max(1000),
+  });
+  return schema.validate(user);
+}
+function validateUserEdit(user) {
+  const schema = Joi.object().keys({
+    name: Joi.string().max(50).required(),
+    email: Joi.string().max(50).required().email(),
+    password: Joi.string().optional().allow('').min(5).max(255),
+    lastName: Joi.string().max(50),
+    phoneNumber: Joi.string(),
+    age: Joi.string().max(255),
+    profileImage: Joi.string(),
+    status: Joi.string(),
+    kitIdentifier: Joi.string().optional().allow(''),
+    gender: Joi.string(),
+    country: Joi.string().max(50),
+    city: Joi.string().max(50),
+    streetNumber: Joi.string().max(1000),
   });
   return schema.validate(user);
 }
 exports.validateUser = validateUser;
+exports.validateUserEdit = validateUserEdit;
 exports.User = User;

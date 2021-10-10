@@ -25,9 +25,11 @@ router.get('/', [verifyToken], async (req, res) => {
   let newConversations = conversations.map(async (conv) => {
     const newConv = { ...conv.toJSON() };
     const messages = await getConversation(newConv._id);
-    newConv.lastMessage = {
-      ...messages[messages.length - 1].toJSON(),
-    };
+    if (messages.length > 0) {
+      newConv.lastMessage = messages[messages.length - 1];
+    } else {
+      newConv.lastMessage = null;
+    }
     newConv.messages = messages;
     return newConv;
   });

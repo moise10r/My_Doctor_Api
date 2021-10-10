@@ -56,6 +56,14 @@ router.post('/', (req, res) => {
                       'phoneNumber',
                       'role',
                       'profileImage',
+                      'status',
+                      'about',
+                      'isAdmin',
+                      'isSuperAdmin',
+                      'gender',
+                      'country',
+                      'city',
+                      'kitIdentifier',
                     ]),
                   );
               } else {
@@ -100,12 +108,16 @@ router.post('/', (req, res) => {
                   'email',
                   'lastName',
                   'phoneNumber',
-                  'age',
+                  'role',
                   'profileImage',
+                  'status',
+                  'about',
+                  'isAdmin',
+                  'isSuperAdmin',
                   'gender',
                   'country',
                   'city',
-                  'streetNumber',
+                  'kitIdentifier',
                 ]),
               );
           } else {

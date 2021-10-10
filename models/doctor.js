@@ -20,13 +20,27 @@ const doctorsSchema = new mongoose.Schema({
     maxlength: 255,
     unique: true,
   },
+  about: {
+    type: String,
+    minlength: 5,
+    maxlength: 255,
+  },
+  city: {
+    type: String,
+  },
+  country: {
+    type: String,
+  },
   role: {
     type: String,
   },
   status: {
     type: String,
-    enum: ['active', 'banned', 'pending'],
-    default: 'pending',
+    enum: ['Active', 'Banned', 'Pending'],
+    default: 'Pending',
+  },
+  age: {
+    type: String,
   },
   password: {
     type: String,
@@ -49,6 +63,9 @@ const doctorsSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  gender: {
+    type: String,
+  },
   createdAt: {
     type: String,
   },
@@ -63,9 +80,43 @@ function validateDoctor(doctor) {
     role: Joi.string().min(5).max(255),
     password: Joi.string().min(5).max(255).required(),
     phoneNumber: Joi.string(),
+    lastName: Joi.string().max(50),
+    phoneNumber: Joi.string(),
+    age: Joi.string().max(255),
+    about: Joi.string().max(255),
+    profileImage: Joi.string(),
+    status: Joi.string(),
+    kitIdentifier: Joi.string(),
+    gender: Joi.string(),
+    country: Joi.string().max(50),
+    city: Joi.string().max(50),
+    profileImage: Joi.string(),
+  });
+  return schema.validate(doctor);
+}
+
+function validateDoctorEdit(doctor) {
+  const schema = Joi.object().keys({
+    name: Joi.string().min(2).max(50).required(),
+    lastName: Joi.string().min(2).max(50),
+    email: Joi.string().min(2).max(50).required().email(),
+    role: Joi.string().min(5).max(255),
+    password: Joi.string().optional().allow('').min(5).max(255),
+    phoneNumber: Joi.string(),
+    lastName: Joi.string().max(50),
+    phoneNumber: Joi.string(),
+    age: Joi.string().max(255),
+    about: Joi.string().max(255),
+    profileImage: Joi.string(),
+    status: Joi.string(),
+    kitIdentifier: Joi.string(),
+    gender: Joi.string(),
+    country: Joi.string().max(50),
+    city: Joi.string().max(50),
     profileImage: Joi.string(),
   });
   return schema.validate(doctor);
 }
 exports.validateDoctor = validateDoctor;
+exports.validateDoctorEdit = validateDoctorEdit;
 exports.Doctor = Doctor;

@@ -15,23 +15,27 @@ const connectDB = require('./config/db');
 connectDB();
 
 //middlewares
+app.use(
+  cors({
+    origin: '*',
+  }),
+);
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 //routes
-app.use(cors());
 require('./routes/router')(app);
 app.use(helmet());
 app.use(compression());
 
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(
-    `The server is running in ${
-      process.env.NODE_ENV
-    } on PORT:${chalk.italic.greenBright(PORT)}`,
+    `The server is running in ${PORT} on PORT:${chalk.italic.greenBright(
+      PORT,
+    )}`,
   );
 });
 
-module.exports = { app, server };
+module.exports = { server };

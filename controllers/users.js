@@ -21,12 +21,12 @@ router.post("/", async (req, res) => {
 	} = req.body;
 	const validation = validateUser(req.body);
 	if (validation.error) {
-		res.status(400).send(validation.error.details[0].message);
+		res.header('x-auth-token').status(400).send(validation.error.details[0].message);
 		return;
 	}
 	let user = await User.findOne({ email });
 	
-	if (user) return res.status(400).send("User already registered.");
+	if (user) return res.header('x-auth-token').status(400).send("User already registered.");
 	user = new User({
 		name,
 		email,
@@ -45,7 +45,7 @@ router.post("/", async (req, res) => {
 	});
 	bcrypt.genSalt(10, (err, salt) => {
 		bcrypt.hash(user.password, salt, (err, hash) => {
-			if (err) return res.send('password is incorrect');
+			if (err) return res.header('x-auth-token').send('password is incorrect');
 			user.password = hash;
 			try {
 				new Fawn.Task().save("users", user).run();
@@ -85,7 +85,7 @@ router.post("/", async (req, res) => {
 						])
 					);
 			} catch (error) {
-				res.send('something went wrong ')
+				res.header('x-auth-token').send('something went wrong ')
 			}
 		});
 	});
@@ -107,12 +107,12 @@ router.put("/", async (req, res) => {
 	} = req.body;
 	const validation = validateUser(req.body);
 	if (validation.error) {
-		res.status(400).send(validation.error.details[0].message);
+		res.header('x-auth-token').status(400).send(validation.error.details[0].message);
 		return;
 	}
 	const newUser = req.user;
 	const user = await User.findById({ _id: newUser._id });
-	if (!user) return res.status(400).send("No user with those credentials");
+	if (!user) return res.header('x-auth-token').status(400).send("No user with those credentials");
 
 	User.findByIdAndUpdate(
 		newUser._id,
@@ -150,7 +150,7 @@ router.put("/", async (req, res) => {
 			};
 			const token = jwt.sign(payload, process.env.SECRET_TOKEN_KEY);
 			console.log(token);
-			if (err) return res.status(400).send("Nothing has been modified");
+			if (err) return res.header('x-auth-token').status(400).send("Nothing has been modified");
 			modifiedUser.save();
 			return res
 				.header("x-auth-token", token)
@@ -180,24 +180,25 @@ router.put("/", async (req, res) => {
 router.delete("/:id",  async (req, res) => {
 	const user = await User.findOneAndDelete({ _id: req.params.id });
 	if (!user)
-		return res.status(404).send("The use with the given ID was not found.");
-	res.send(user);
+		return res.header('x-auth-token').status(404).send("The use with the given ID was not found.");
+	res.header('x-auth-token').send(user);
 });
 
 //Get All Users
 // [auth.verifyToken, admin], 
 router.get("/",async (req, res) => {
 	const users = await User.find();
-	if (!users) return res.status(404).send("There is no user ");
-	res.send(users);
+	if (!users) return res.header('x-auth-token').status(404).send("There is no user ");
+	console.log(req.headers);
+	res.header('x-auth-token').send(users);
 });
 //Get One User
 //, [auth.verifyToken, admin]
 router.get("/:id", async (req, res) => {
 	const user = await User.findById({ _id: req.params.id });
 	if (!user)
-		return res.status(404).send("The User with this ID was not found. ");
-	res.status(200).send(user);
+		return res.header('x-auth-token').status(404).send("The User with this ID was not found. ");
+	res.header('x-auth-token').status(200).send(user);
 });
 //Modifier User Profile
 // [auth.verifyToken, admin],
@@ -217,14 +218,14 @@ router.put("/:id", async (req, res) => {
 	} = req.body;
 	const validation = validateUser(req.body);
 	if (validation.error) {
-		res.status(400).send(validation.error.details[0].message);
+		res.header('x-auth-token').status(400).send(validation.error.details[0].message);
 		return;
 	}
 	const user = await User.findById({ _id: req.params.id });
-	if (!user) return res.status(400).send("No user with those credentials");
+	if (!user) return res.header('x-auth-token').status(400).send("No user with those credentials");
 	bcrypt.genSalt(10, (err, salt) => {
 		bcrypt.hash(password, salt, (err, hash) => {
-			if (err) return res.send('password is incorrect');
+			if (err) return res.header('x-auth-token').send('password is incorrect');
 			User.findByIdAndUpdate(
 				user._id,
 			{	
@@ -264,7 +265,7 @@ router.put("/:id", async (req, res) => {
 						isSuperAdmin: modifiedUser.isSuperAdmin,
 					};
 					const token = jwt.sign(payload, process.env.SECRET_TOKEN_KEY);
-					if (err) return res.status(400).send("Nothing has been modified");
+					if (err) return res.header('x-auth-token').status(400).send("Nothing has been modified");
 					modifiedUser.save();
 					return res
 						.header("x-auth-token", token)

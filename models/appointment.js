@@ -1,5 +1,5 @@
-const mongoose =  require('mongoose');
-const Joi =  require('@hapi/joi');
+const mongoose = require('mongoose');
+const Joi = require('@hapi/joi');
 
 const appointmentSchema = new mongoose.Schema({
   doctor: {
@@ -11,7 +11,7 @@ const appointmentSchema = new mongoose.Schema({
         maxlength: 50,
       },
     }),
-    required: true
+    required: true,
   },
   patient: {
     type: new mongoose.Schema({
@@ -22,9 +22,13 @@ const appointmentSchema = new mongoose.Schema({
         maxlength: 50,
       },
     }),
-    required: true
+    required: true,
   },
   date: {
+    type: String,
+    required: true,
+  },
+  description: {
     type: String,
     required: true,
   },
@@ -37,10 +41,10 @@ const appointmentSchema = new mongoose.Schema({
     default: false,
   },
   takenAt: {
-    type:String,
+    type: String,
     required: true,
-  }
-}) 
+  },
+});
 
 const Appointment = mongoose.model('appointment', appointmentSchema);
 
@@ -48,7 +52,8 @@ function validateAppointement(appointement) {
   const schema = Joi.object().keys({
     time: Joi.string().required(),
     date: Joi.string().required(),
-  })
+    description: Joi.string().required(),
+  });
   return schema.validate(appointement);
 }
 

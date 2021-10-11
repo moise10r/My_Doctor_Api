@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { User, validateUser, validateUserEdit } = require('../models/user');
 const bcrypt = require('bcrypt');
+const { Conversation } = require('../models/conversation');
+const { Message } = require('../models/message');
+const { Appointment } = require('../models/appointment');
 const Fawn = require('fawn');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
@@ -57,6 +60,8 @@ router.post('/', async (req, res) => {
           country: '',
           city: '',
           streetNumber: '',
+          status: user.status,
+          kitIdentifier: '',
         };
         const token = jwt.sign(payload, process.env.SECRET_TOKEN_KEY);
         console.log(token);
@@ -74,6 +79,8 @@ router.post('/', async (req, res) => {
               'profileImage',
               'gender',
               'country',
+              'status',
+              'kitIdentifier',
               'city',
               'streetNumber',
             ]),
@@ -89,6 +96,30 @@ router.delete('/:id', [auth.verifyToken, admin], async (req, res) => {
   const user = await User.findOneAndDelete({ _id: req.params.id });
   if (!user)
     return res.status(404).send('The use with the given ID was not found.');
+  // remove all the conversations where the user is among the participants
+  await Appointment.deleteMany({
+    patient: {
+      $in: [user._id],
+    },
+  });
+  // delete all the conversations where the doctor is among participants
+  await Conversation.deleteMany({
+    participants: {
+      $elemMatch: {
+        _id: user._id,
+      },
+    },
+  });
+
+  // delete all the messages sent by the doctor
+  await Message.deleteMany({
+    sender: {
+      $elemMatch: {
+        _id: user._id,
+      },
+    },
+  });
+
   res.send(user);
 });
 

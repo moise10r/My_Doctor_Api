@@ -42,6 +42,8 @@ router.post('/', (req, res) => {
                   profileImage: doctor.profileImage,
                   isAdmin: doctor.isAdmin,
                   isSuperAdmin: doctor.isSuperAdmin,
+                  status: doctor.status,
+                  isDoctor: true,
                 };
                 const token = jwt.sign(payload, process.env.SECRET_TOKEN_KEY);
                 return res
@@ -64,6 +66,7 @@ router.post('/', (req, res) => {
                       'country',
                       'city',
                       'kitIdentifier',
+                      'isDoctor',
                     ]),
                   );
               } else {

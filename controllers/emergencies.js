@@ -5,17 +5,17 @@ const { Emergency, validateEmergency } = require('../models/emergency');
 
 router.post('/', [verifyToken], async (req, res) => {
   let user = req.user;
-  if (user.status === 'Pending' || user.status === 'Inactive') {
-    res
+  if (user.status === 'Pending' || user.status === 'Inactive')
+    return res
       .status(400)
       .send(
         'Sorry Your account is not verified, or you have financial issues.',
       );
-  }
 
   const { error } = validateEmergency(req.body);
   if (error) {
     res.status(400).send(error.details[0].message);
+    return;
   }
 
   const { altitude, latitude, longitude } = req.body.location;
@@ -42,6 +42,7 @@ router.post('/', [verifyToken], async (req, res) => {
     res
       .status(400)
       .send('An error occured while sending the Emergency, Please try again.');
+    return;
   }
 
   socket.emit('new-emergency', emergency);

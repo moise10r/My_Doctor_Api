@@ -25,6 +25,10 @@ const doctorsSchema = new mongoose.Schema({
     minlength: 5,
     maxlength: 255,
   },
+  isDoctor: {
+    type: Boolean,
+    default: true,
+  },
   city: {
     type: String,
   },

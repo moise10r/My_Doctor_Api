@@ -5,6 +5,9 @@ const {
   validateDoctor,
   validateDoctorEdit,
 } = require('../models/doctor');
+const { Conversation } = require('../models/conversation');
+const { User } = require('../models/user');
+const { Message } = require('../models/message');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
@@ -87,9 +90,9 @@ router.post('/', [auth.verifyToken, admin], async (req, res) => {
           about: doctor.about,
           city: doctor.city,
           status: doctor.status,
+          isDoctor: doctor.isDoctor,
         };
         const token = jwt.sign(payload, process.env.SECRET_TOKEN_KEY);
-        console.log(token);
         return res
           .header('x-auth-token', token)
           .status(200)
@@ -108,6 +111,7 @@ router.post('/', [auth.verifyToken, admin], async (req, res) => {
               'city',
               'streetNumber',
               'status',
+              'isDoctor',
             ]),
           );
       } catch (error) {
@@ -215,6 +219,30 @@ router.delete('/:id', [auth.verifyToken, admin], async (req, res) => {
       .header('x-auth-token')
       .status(404)
       .send('The use with the given ID was not found.');
+  // delete all the appointments where the doctor._id == doctor._id
+  await Appointment.deleteMany({
+    doctor: {
+      $in: [doctor._id],
+    },
+  });
+  // delete all the conversations where the doctor is among participants
+  await Conversation.deleteMany({
+    participants: {
+      $elemMatch: {
+        _id: doctor._id,
+      },
+    },
+  });
+
+  // delete all the messages sent by the doctor
+  await Message.deleteMany({
+    sender: {
+      $elemMatch: {
+        _id: doctor._id,
+      },
+    },
+  });
+
   res.header('x-auth-token').send(doctor);
 });
 

@@ -12,14 +12,74 @@ router.post('/', async (req, res) => {
   const patient = await User.findOne({ kitIdentifier });
   if (!patient) return res.status(400).send('No user with that kitIdentifier');
 
+  const checkDnagerousHeartRateRanges = (heartRate) => {
+    const dangerousHeartRateRanges = [
+      { min: 60, max: 100 },
+      { min: 100, max: 140 },
+      { min: 140, max: 180 },
+      { min: 180, max: 220 },
+    ];
+    for (let i = 0; i < dangerousHeartRateRanges.length; i++) {
+      if (
+        +heartRate.split('/')[0] >= dangerousHeartRateRanges[i].min &&
+        +heartRate.split('/')[0] <= dangerousHeartRateRanges[i].max
+      ) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const checkDangerousBloodPressureRanges = (bloodPressure) => {
+    const dangerousBloodPressureRanges = [
+      { min: 90, max: 120 },
+      { min: 120, max: 140 },
+      { min: 140, max: 160 },
+      { min: 160, max: 180 },
+    ];
+    for (let i = 0; i < dangerousBloodPressureRanges.length; i++) {
+      if (
+        +bloodPressure.split(' ')[0] >= dangerousBloodPressureRanges[i].min &&
+        +bloodPressure.split(' ')[0] <= dangerousBloodPressureRanges[i].max
+      ) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const checkDangerousTemperatureRanges = (temperature) => {
+    const dangerousTemperatureRanges = [
+      { min: 36.5, max: 37.5 },
+      { min: 37.5, max: 38.5 },
+      { min: 38.5, max: 39.5 },
+      { min: 39.5, max: 40.5 },
+    ];
+    for (let i = 0; i < dangerousTemperatureRanges.length; i++) {
+      if (
+        +temperature.split(' ')[0] >= dangerousTemperatureRanges[i].min &&
+        +temperature.split(' ')[0] <= dangerousTemperatureRanges[i].max
+      ) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   let test = new Test({
     patient: {
       _id: patient._id,
       name: patient.name,
     },
-    heartRate,
-    bloodPressure,
-    temperature,
+    heartRate: checkDnagerousHeartRateRanges(heartRate)
+      ? `${heartRate} ⚠️`
+      : heartRate,
+    bloodPressure: checkDangerousBloodPressureRanges(bloodPressure)
+      ? `${bloodPressure} ⚠️`
+      : bloodPressure,
+    temperature: checkDangerousTemperatureRanges(temperature)
+      ? `${temperature} ⚠️`
+      : temperature,
   });
 
   test = await test.save();

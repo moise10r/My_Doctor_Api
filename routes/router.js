@@ -5,6 +5,7 @@ const appointments = require('../controllers/appointments');
 const conversations = require('../controllers/conversations');
 const messages = require('../controllers/messages');
 const tests = require('../controllers/tests');
+const emergencies = require('../controllers/emergencies');
 
 module.exports = function (app) {
   app.use('/api/auth', auth);
@@ -14,4 +15,5 @@ module.exports = function (app) {
   app.use('/api/conversations', conversations);
   app.use('/api/messages', messages);
   app.use('/api/tests', tests);
+  app.use('/api/emergencies', emergencies);
 };

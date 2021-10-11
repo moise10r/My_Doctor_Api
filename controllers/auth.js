@@ -93,6 +93,7 @@ router.post('/', (req, res) => {
               gender: user.gender,
               country: user.country,
               city: user.city,
+              status: user.status,
               streetNumber: user.streetNumber,
               isAdmin: user.isAdmin,
               isSuperAdmin: user.isSuperAdmin,

@@ -35,6 +35,13 @@ router.get('/', [verifyToken], async (req, res) => {
   });
 
   newConversations = await Promise.all(newConversations);
+  // sort the conversations by last message createdAt
+  newConversations = newConversations.sort((a, b) => {
+    if (a.lastMessage && b.lastMessage) {
+      return b.lastMessage.createdAt - a.lastMessage.createdAt;
+    }
+    return 0;
+  });
 
   res.send(newConversations);
 });

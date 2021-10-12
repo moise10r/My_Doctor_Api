@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { User, validateUser, validateUserEdit } = require('../models/user');
 const bcrypt = require('bcrypt');
+const { Conversation } = require('../models/conversation');
+const { Message } = require('../models/message');
+const { Appointment } = require('../models/appointment');
 const Fawn = require('fawn');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
@@ -35,8 +38,8 @@ router.post('/', async (req, res) => {
     country: '',
     city: '',
     streetNumber: '',
-    isAdmin: true,
-    isSuperAdmin: true,
+    isAdmin: false,
+    isSuperAdmin: false,
     createdAt: moment(Date.now()).format('LL'),
   });
   bcrypt.genSalt(10, (err, salt) => {
@@ -57,27 +60,11 @@ router.post('/', async (req, res) => {
           country: '',
           city: '',
           streetNumber: '',
+          status: user.status,
+          kitIdentifier: '',
         };
         const token = jwt.sign(payload, process.env.SECRET_TOKEN_KEY);
-        console.log(token);
-        return res
-          .header('x-auth-token', token)
-          .status(200)
-          .send(
-            _.pick(payload, [
-              '_id',
-              'name',
-              'email',
-              'lastName',
-              'phoneNumber',
-              'age',
-              'profileImage',
-              'gender',
-              'country',
-              'city',
-              'streetNumber',
-            ]),
-          );
+        return res.send(token);
       } catch (error) {
         res.send('something went wrong ');
       }
@@ -89,6 +76,30 @@ router.delete('/:id', [auth.verifyToken, admin], async (req, res) => {
   const user = await User.findOneAndDelete({ _id: req.params.id });
   if (!user)
     return res.status(404).send('The use with the given ID was not found.');
+  // remove all the conversations where the user is among the participants
+  await Appointment.deleteMany({
+    patient: {
+      $in: [user._id],
+    },
+  });
+  // delete all the conversations where the doctor is among participants
+  await Conversation.deleteMany({
+    participants: {
+      $elemMatch: {
+        _id: user._id,
+      },
+    },
+  });
+
+  // delete all the messages sent by the doctor
+  await Message.deleteMany({
+    sender: {
+      $elemMatch: {
+        _id: user._id,
+      },
+    },
+  });
+
   res.send(user);
 });
 
@@ -178,25 +189,7 @@ router.put('/:id', [auth.verifyToken], async (req, res) => {
     process.env.SECRET_TOKEN_KEY,
   );
 
-  res
-    .header('x-auth-token', token)
-    .send(
-      _.pick(user, [
-        '_id',
-        'name',
-        'email',
-        'lastName',
-        'phoneNumber',
-        'age',
-        'profileImage',
-        'gender',
-        'country',
-        'city',
-        'streetNumber',
-        'status',
-        'kitIdentifier',
-      ]),
-    );
+  res.send(token);
 });
 
 //make user Admin

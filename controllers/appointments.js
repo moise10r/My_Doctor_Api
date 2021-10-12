@@ -96,6 +96,13 @@ router.get('/doctors/:doctorId', async (req, res) => {
   res.header('x-auth-token').status(200).send(appointement);
 });
 
+router.get('/', [verifyToken], async (req, res) => {
+  const user = req.user;
+  const appointements = await Appointment.find({
+    $or: [{ 'doctor._id': user._id }, { 'patient._id': user._id }],
+  });
+  res.header('x-auth-token').status(200).send(appointements);
+});
 router.get('/patients/:patientId', async (req, res) => {
   const appointement = await Appointment.find({
     'patient._id': req.params.patientId,
@@ -103,6 +110,15 @@ router.get('/patients/:patientId', async (req, res) => {
   if (!appointement)
     return res.header('x-auth-token').send('No appointement taken!');
   res.header('x-auth-token').status(200).send(appointement);
+});
+
+router.delete('/:appointmentId', [verifyToken], async (req, res) => {
+  const appointment = await Appointment.findByIdAndRemove({
+    _id: req.params.appointmentId,
+  });
+  if (!appointment)
+    return res.header('x-auth-token').send('No appointement taken!');
+  res.header('x-auth-token').status(200).send(appointment);
 });
 
 module.exports = router;

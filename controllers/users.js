@@ -64,27 +64,7 @@ router.post('/', async (req, res) => {
           kitIdentifier: '',
         };
         const token = jwt.sign(payload, process.env.SECRET_TOKEN_KEY);
-        console.log(token);
-        return res
-          .header('x-auth-token', token)
-          .status(200)
-          .send(
-            _.pick(payload, [
-              '_id',
-              'name',
-              'email',
-              'lastName',
-              'phoneNumber',
-              'age',
-              'profileImage',
-              'gender',
-              'country',
-              'status',
-              'kitIdentifier',
-              'city',
-              'streetNumber',
-            ]),
-          );
+        return res.send(token);
       } catch (error) {
         res.send('something went wrong ');
       }
@@ -209,25 +189,7 @@ router.put('/:id', [auth.verifyToken], async (req, res) => {
     process.env.SECRET_TOKEN_KEY,
   );
 
-  res
-    .header('x-auth-token', token)
-    .send(
-      _.pick(user, [
-        '_id',
-        'name',
-        'email',
-        'lastName',
-        'phoneNumber',
-        'age',
-        'profileImage',
-        'gender',
-        'country',
-        'city',
-        'streetNumber',
-        'status',
-        'kitIdentifier',
-      ]),
-    );
+  res.send(token);
 });
 
 //make user Admin

@@ -33,7 +33,6 @@ router.post('/', [auth.verifyToken, admin], async (req, res) => {
     city,
     about,
   } = req.body;
-  console.log(req.body);
   const validation = validateDoctor(req.body);
   if (validation.error) {
     res
@@ -93,27 +92,7 @@ router.post('/', [auth.verifyToken, admin], async (req, res) => {
           isDoctor: doctor.isDoctor,
         };
         const token = jwt.sign(payload, process.env.SECRET_TOKEN_KEY);
-        return res
-          .header('x-auth-token', token)
-          .status(200)
-          .send(
-            _.pick(payload, [
-              '_id',
-              'name',
-              'email',
-              'lastName',
-              'phoneNumber',
-              'age',
-              'profileImage',
-              'gender',
-              'country',
-              'about',
-              'city',
-              'streetNumber',
-              'status',
-              'isDoctor',
-            ]),
-          );
+        return res.send(token);
       } catch (error) {
         res.header('x-auth-token').send('Something went wrong');
       }
@@ -188,28 +167,12 @@ router.put('/:id', [auth.verifyToken, admin], async (req, res) => {
       'about',
       'city',
       'status',
+      'isDoctor',
     ]),
     process.env.SECRET_TOKEN_KEY,
   );
 
-  res
-    .header('x-auth-token', token)
-    .send(
-      _.pick(doctor, [
-        '_id',
-        'name',
-        'email',
-        'lastName',
-        'phoneNumber',
-        'age',
-        'profileImage',
-        'gender',
-        'country',
-        'about',
-        'city',
-        'status',
-      ]),
-    );
+  res.send(token);
 });
 
 router.delete('/:id', [auth.verifyToken, admin], async (req, res) => {

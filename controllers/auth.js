@@ -43,32 +43,10 @@ router.post('/', (req, res) => {
                   isAdmin: doctor.isAdmin,
                   isSuperAdmin: doctor.isSuperAdmin,
                   status: doctor.status,
-                  isDoctor: true,
+                  isDoctor: doctor.isDoctor,
                 };
                 const token = jwt.sign(payload, process.env.SECRET_TOKEN_KEY);
-                return res
-                  .header('x-auth-token', token)
-                  .status(200)
-                  .send(
-                    _.pick(payload, [
-                      '_id',
-                      'name',
-                      'email',
-                      'lastName',
-                      'phoneNumber',
-                      'role',
-                      'profileImage',
-                      'status',
-                      'about',
-                      'isAdmin',
-                      'isSuperAdmin',
-                      'gender',
-                      'country',
-                      'city',
-                      'kitIdentifier',
-                      'isDoctor',
-                    ]),
-                  );
+                return res.send(token);
               } else {
                 return res
                   .header('x-auth-token')
@@ -100,30 +78,10 @@ router.post('/', (req, res) => {
               streetNumber: user.streetNumber,
               isAdmin: user.isAdmin,
               isSuperAdmin: user.isSuperAdmin,
+              kitIdentifier: user.kitIdentifier,
             };
             const token = jwt.sign(payload, process.env.SECRET_TOKEN_KEY);
-            return res
-              .header('x-auth-token', token)
-              .status(200)
-              .send(
-                _.pick(payload, [
-                  '_id',
-                  'name',
-                  'email',
-                  'lastName',
-                  'phoneNumber',
-                  'role',
-                  'profileImage',
-                  'status',
-                  'about',
-                  'isAdmin',
-                  'isSuperAdmin',
-                  'gender',
-                  'country',
-                  'city',
-                  'kitIdentifier',
-                ]),
-              );
+            return res.send(token);
           } else {
             return res
               .header('x-auth-token')

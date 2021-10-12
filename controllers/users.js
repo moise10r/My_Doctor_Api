@@ -38,8 +38,8 @@ router.post('/', async (req, res) => {
     country: '',
     city: '',
     streetNumber: '',
-    isAdmin: true,
-    isSuperAdmin: true,
+    isAdmin: false,
+    isSuperAdmin: false,
     createdAt: moment(Date.now()).format('LL'),
   });
   bcrypt.genSalt(10, (err, salt) => {

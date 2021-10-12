@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useHistory, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import {
   CBadge,
   CCard,
@@ -9,28 +9,28 @@ import {
   CDataTable,
   CRow,
   CPagination,
-} from "@coreui/react";
+} from '@coreui/react';
 
-import { connect } from "react-redux";
-import { loadUsers } from "src/store/reducers/users";
+import { connect } from 'react-redux';
+import { loadUsers } from 'src/store/reducers/users';
 
 const getBadge = (status) => {
   switch (status) {
-    case "Active":
-      return "success";
-    case "Inactive":
-      return "danger";
-    case "Pending":
-      return "warning";
+    case 'Active':
+      return 'success';
+    case 'Inactive':
+      return 'danger';
+    case 'Pending':
+      return 'warning';
     default:
-      return "primary";
+      return 'primary';
   }
 };
 
 const Users = (props) => {
   const { loadUsers, users } = props;
   const history = useHistory();
-  const queryPage = useLocation().search.match(/page=([0-9]+)/, "");
+  const queryPage = useLocation().search.match(/page=([0-9]+)/, '');
   const currentPage = Number(queryPage && queryPage[1] ? queryPage[1] : 1);
   const [page, setPage] = useState(currentPage);
 
@@ -55,11 +55,11 @@ const Users = (props) => {
             <CDataTable
               items={users}
               fields={[
-                { key: "name", _classes: "font-weight-bold" },
-                { key: "lastName", _classes: "font-weight-bold" },
-                "email",
-                "phoneNumber",
-                "status",
+                { key: 'name', _classes: 'font-weight-bold' },
+                { key: 'lastName', _classes: 'font-weight-bold' },
+                'email',
+                'phoneNumber',
+                'status',
               ]}
               hover
               striped

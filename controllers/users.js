@@ -1,103 +1,231 @@
-import React, { useState, useEffect } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
-import {
-  CBadge,
-  CCard,
-  CCardBody,
-  CCardHeader,
-  CCol,
-  CDataTable,
-  CRow,
-  CPagination,
-} from '@coreui/react';
+const express = require('express');
+const router = express.Router();
+const {
+  Doctor,
+  validateDoctor,
+  validateDoctorEdit,
+} = require('../models/doctor');
+const { Conversation } = require('../models/conversation');
+const { User } = require('../models/user');
+const { Message } = require('../models/message');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const _ = require('lodash');
+const moment = require('moment');
+const auth = require('../middlewares/auth');
+const admin = require('../middlewares/admin');
+const superAdmin = require('../middlewares/superAdmin');
 
-import { connect } from 'react-redux';
-import { loadUsers } from 'src/store/reducers/users';
-
-const getBadge = (status) => {
-  switch (status) {
-    case 'Active':
-      return 'success';
-    case 'Inactive':
-      return 'danger';
-    case 'Pending':
-      return 'warning';
-    default:
-      return 'primary';
+// auth.verifyToken,
+// admin,
+router.post('/', [auth.verifyToken, admin], async (req, res) => {
+  let {
+    name,
+    lastName,
+    email,
+    password,
+    phoneNumber,
+    age,
+    profileImage,
+    gender,
+    country,
+    status,
+    city,
+    about,
+  } = req.body;
+  const validation = validateDoctor(req.body);
+  if (validation.error) {
+    res
+      .header('x-auth-token')
+      .status(400)
+      .send(validation.error.details[0].message);
+    return;
   }
-};
+  let doctor = await Doctor.findOne({
+    $or: [
+      {
+        email,
+      },
+    ],
+  });
+  if (doctor)
+    return res
+      .header('x-auth-token')
+      .status(400)
+      .send('doctor already registered.');
+  doctor = new Doctor({
+    name,
+    email,
+    password,
+    lastName,
+    phoneNumber,
+    age,
+    profileImage,
+    gender,
+    country,
+    about,
+    city,
+    status,
+    createdAt: moment(Date.now()).format('LL'),
+  });
+  bcrypt.genSalt(10, (err, salt) => {
+    bcrypt.hash(doctor.password, salt, (err, hash) => {
+      if (err) throw err;
+      doctor.password = hash;
+      try {
+        doctor.save();
+        const payload = {
+          _id: doctor._id,
+          name: doctor.name,
+          email: doctor.email,
+          isAdmin: doctor.isAdmin,
+          isSuperAdmin: doctor.isSuperAdmin,
+          lastName: doctor.lastName,
+          phoneNumber: doctor.phoneNumber,
+          age: doctor.age,
+          profileImage: doctor.profileImage,
+          gender: doctor.gender,
+          country: doctor.country,
+          about: doctor.about,
+          city: doctor.city,
+          status: doctor.status,
+          isDoctor: doctor.isDoctor,
+        };
+        const token = jwt.sign(payload, process.env.SECRET_TOKEN_KEY);
+        return res.send(token);
+      } catch (error) {
+        res.header('x-auth-token').send('Something went wrong');
+      }
+    });
+  });
+});
 
-const Users = (props) => {
-  const { loadUsers, users } = props;
-  const history = useHistory();
-  const queryPage = useLocation().search.match(/page=([0-9]+)/, '');
-  const currentPage = Number(queryPage && queryPage[1] ? queryPage[1] : 1);
-  const [page, setPage] = useState(currentPage);
+// auth.verifyToken,
+router.put('/:id', [auth.verifyToken, admin], async (req, res) => {
+  const {
+    name,
+    lastName,
+    email,
+    phoneNumber,
+    age,
+    profileImage,
+    gender,
+    country,
+    status,
+    city,
+    about,
+  } = req.body;
+  const validation = validateDoctorEdit(req.body);
+  if (validation.error) {
+    return res.status(400).send(validation.error.details[0].message);
+  }
 
-  const pageChange = (newPage) => {
-    currentPage !== newPage && history.push(`/users?page=${newPage}`);
-  };
+  let password = req.body.password;
+  if (password) {
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(password, salt);
+    password = password = hash;
+  }
+  let doctor = await Doctor.findById(req.params.id);
+  if (!doctor)
+    return res.status(404).send('The Doctor with this ID was not found. ');
 
-  useEffect(() => {
-    currentPage !== page && setPage(currentPage);
-    loadUsers();
-  }, [currentPage, page, loadUsers]);
-
-  return (
-    <CRow>
-      <CCol xl={12}>
-        <CCard>
-          <CCardHeader>
-            Patients
-            <small className="text-muted"> List</small>
-          </CCardHeader>
-          <CCardBody>
-            <CDataTable
-              items={users}
-              fields={[
-                { key: 'name', _classes: 'font-weight-bold' },
-                { key: 'lastName', _classes: 'font-weight-bold' },
-                'email',
-                'phoneNumber',
-                'status',
-              ]}
-              hover
-              striped
-              itemsPerPage={5}
-              activePage={page}
-              clickableRows
-              onRowClick={(item) => history.push(`/users/${item._id}/`)}
-              scopedSlots={{
-                status: (item) => (
-                  <td>
-                    <CBadge color={getBadge(item.status)}>{item.status}</CBadge>
-                  </td>
-                ),
-              }}
-            />
-            <CPagination
-              activePage={page}
-              onActivePageChange={pageChange}
-              pages={Math.ceil(users.length / 5)}
-              doubleArrows={false}
-              align="center"
-            />
-          </CCardBody>
-        </CCard>
-      </CCol>
-    </CRow>
+  doctor = await Doctor.findByIdAndUpdate(
+    { _id: req.params.id },
+    {
+      $set: {
+        name,
+        lastName,
+        email,
+        password: password ? password : doctor.password,
+        phoneNumber,
+        age,
+        gender,
+        about,
+        profileImage,
+        status,
+        city,
+        country,
+      },
+    },
+    { new: true },
   );
-};
+  if (!doctor)
+    return res.status(404).send('The Doctor with this ID was not found. ');
 
-const mapStateToProps = (state) => {
-  return {
-    users: state.users.list,
-    loading: state.users.loading,
-  };
-};
+  const token = jwt.sign(
+    _.pick(doctor, [
+      '_id',
+      'name',
+      'email',
+      'lastName',
+      'phoneNumber',
+      'age',
+      'profileImage',
+      'gender',
+      'country',
+      'about',
+      'city',
+      'status',
+      'isDoctor',
+    ]),
+    process.env.SECRET_TOKEN_KEY,
+  );
 
-const mapDispatchToProps = {
-  loadUsers: () => loadUsers(),
-};
+  res.send(token);
+});
 
-export default connect(mapStateToProps, mapDispatchToProps)(Users);
+router.delete('/:id', [auth.verifyToken, admin], async (req, res) => {
+  const doctor = await Doctor.findOneAndDelete({ _id: req.params.id });
+  if (!doctor)
+    return res
+      .header('x-auth-token')
+      .status(404)
+      .send('The use with the given ID was not found.');
+  // delete all the appointments where the doctor._id == doctor._id
+  await Appointment.deleteMany({
+    doctor: {
+      $in: [doctor._id],
+    },
+  });
+  // delete all the conversations where the doctor is among participants
+  await Conversation.deleteMany({
+    participants: {
+      $elemMatch: {
+        _id: doctor._id,
+      },
+    },
+  });
+
+  // delete all the messages sent by the doctor
+  await Message.deleteMany({
+    sender: {
+      $elemMatch: {
+        _id: doctor._id,
+      },
+    },
+  });
+
+  res.header('x-auth-token').send(doctor);
+});
+
+router.get('/', [auth.verifyToken], async (req, res) => {
+  const doctors = await Doctor.find();
+  if (!doctors)
+    return res.header('x-auth-token').status(404).send('There is no doctor ');
+  res.header('x-auth-token').send(doctors);
+});
+
+router.get('/:id', async (req, res) => {
+  const doctor = await Doctor.findById({ _id: req.params.id });
+  if (!doctor)
+    return res
+      .header('x-auth-token')
+      .status(404)
+      .send('The doctor with this ID was not found. ');
+  res.header('x-auth-token').status(200).send(doctor);
+});
+
+router.put('/:id/admin', [auth.verifyToken, admin], superAdmin.isSuperAdmin);
+
+module.exports = router;

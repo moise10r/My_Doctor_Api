@@ -127,7 +127,6 @@ router.put('/:id', [auth.verifyToken, admin], async (req, res) => {
     name,
     lastName,
     email,
-    password,
     phoneNumber,
     age,
     profileImage,
@@ -142,6 +141,7 @@ router.put('/:id', [auth.verifyToken, admin], async (req, res) => {
     return res.status(400).send(validation.error.details[0].message);
   }
 
+  let password = req.body.password;
   if (password) {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);

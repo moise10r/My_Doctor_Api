@@ -101,7 +101,7 @@ router.get('/patient/:id', [verifyToken], async (req, res) => {
   if (!patient)
     return res.status(404).send('The patient with the given ID was not found.');
   const tests = await Test.find({
-    'patient._id': user._id,
+    'patient._id': patient._id,
   }).sort({ createdAt: -1 });
 
   res.send(tests);

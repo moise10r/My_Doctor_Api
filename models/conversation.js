@@ -6,7 +6,7 @@ const conversationSchema = new mongoose.Schema({
     {
       _id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        required: true,
       },
       lastName: String,
       email: String,

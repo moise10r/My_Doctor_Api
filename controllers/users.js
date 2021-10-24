@@ -146,6 +146,13 @@ router.put('/:id', [auth.verifyToken], async (req, res) => {
   if (!user)
     return res.status(404).send('The User with this ID was not found. ');
 
+  if (kitIdentifier) {
+    const userWithSameKitIdentifier = await User.findOne({ kitIdentifier });
+    if (userWithSameKitIdentifier) {
+      return res.status(400).send('Kit identifier already in use.');
+    }
+  }
+
   user = await User.findByIdAndUpdate(
     { _id: req.params.id },
     {

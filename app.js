@@ -8,7 +8,22 @@ const compression = require('compression');
 const cors = require('cors');
 const server = require('http').createServer(app);
 const { Server } = require('socket.io');
-const io = new Server(server);
+const io = new Server(server, {
+  // configure cors
+  cors: {
+    origin: '*',
+  },
+  handlePreflightRequest: (req, res) => {
+    const headers = {
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Allow-Origin': req.headers.origin,
+      'Access-Control-Allow-Credentials': true,
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+    };
+    res.writeHead(200, headers);
+    res.end();
+  },
+});
 
 //environments variables
 dotenv.config({ path: './config/config.env' });

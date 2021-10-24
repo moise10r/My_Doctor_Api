@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { verifyToken } = require('../middlewares/auth');
 const { Emergency, validateEmergency } = require('../models/emergency');
+// const sendMessage = require('../utils/sendMessages');
 
 router.post('/', [verifyToken], async (req, res) => {
   let user = req.user;
@@ -47,10 +48,18 @@ router.post('/', [verifyToken], async (req, res) => {
 
   socket.emit('new-emergency', emergency);
   res.send(emergency);
+  // sendMessage(
+  //   '+250780083122',
+  //   `An emergency alert was sent by the patient ${
+  //     user.name
+  //   } with the phone number: ${
+  //     user.phoneNumber ? user.phoneNumber : 'not specified'
+  //   }. Kindly go to your dashboard to see more details about the patient to locate him and assist him.`,
+  // );
 });
 
 router.get('/', [verifyToken], async (req, res) => {
-  const emergencies = await Emergency.find().sort({ createdAt: 1 });
+  const emergencies = await Emergency.find().sort({ createdAt: -1 });
   res.send(emergencies);
 });
 

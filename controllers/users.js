@@ -148,7 +148,7 @@ router.put('/:id', [auth.verifyToken], async (req, res) => {
 
   if (kitIdentifier) {
     const userWithSameKitIdentifier = await User.findOne({ kitIdentifier });
-    if (userWithSameKitIdentifier) {
+    if (userWithSameKitIdentifier && userWithSameKitIdentifier._id != user._id)) {
       return res.status(400).send('Kit identifier already in use.');
     }
   }

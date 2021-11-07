@@ -12,6 +12,7 @@ const io = new Server(server, {
   // configure cors
   cors: {
     origin: '*',
+    methods: ['GET', 'POST'],
   },
   handlePreflightRequest: (req, res) => {
     const headers = {

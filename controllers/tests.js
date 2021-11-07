@@ -13,55 +13,20 @@ router.post('/', async (req, res) => {
   if (!patient) return res.status(400).send('No user with that kitIdentifier');
 
   const checkDnagerousHeartRateRanges = (heartRate) => {
-    const dangerousHeartRateRanges = [
-      { min: 60, max: 100 },
-      { min: 100, max: 140 },
-      { min: 140, max: 180 },
-      { min: 180, max: 220 },
-    ];
-    for (let i = 0; i < dangerousHeartRateRanges.length; i++) {
-      if (
-        +heartRate.split('/')[0] >= dangerousHeartRateRanges[i].min &&
-        +heartRate.split('/')[0] <= dangerousHeartRateRanges[i].max
-      ) {
-        return true;
-      }
-    }
+    if (heartRate >= 140 || heartRate <= 90) return true;
     return false;
   };
 
   const checkDangerousBloodPressureRanges = (bloodPressure) => {
-    const dangerousBloodPressureRanges = [
-      { min: 90, max: 120 },
-      { min: 120, max: 140 },
-      { min: 140, max: 160 },
-      { min: 160, max: 180 },
-    ];
-    for (let i = 0; i < dangerousBloodPressureRanges.length; i++) {
-      if (
-        +bloodPressure.split(' ')[0] >= dangerousBloodPressureRanges[i].min &&
-        +bloodPressure.split(' ')[0] <= dangerousBloodPressureRanges[i].max
-      ) {
-        return true;
-      }
+    if (bloodPressure >= 120 && bloodPressure <= 140) {
+      return true;
     }
     return false;
   };
 
   const checkDangerousTemperatureRanges = (temperature) => {
-    const dangerousTemperatureRanges = [
-      { min: 36.5, max: 37.5 },
-      { min: 37.5, max: 38.5 },
-      { min: 38.5, max: 39.5 },
-      { min: 39.5, max: 40.5 },
-    ];
-    for (let i = 0; i < dangerousTemperatureRanges.length; i++) {
-      if (
-        +temperature.split(' ')[0] >= dangerousTemperatureRanges[i].min &&
-        +temperature.split(' ')[0] <= dangerousTemperatureRanges[i].max
-      ) {
-        return true;
-      }
+    if (temperature > 37.8) {
+      return true;
     }
     return false;
   };
@@ -70,16 +35,20 @@ router.post('/', async (req, res) => {
     patient: {
       _id: patient._id,
       name: patient.name,
+      lastName: patient.lastName,
+      email: patient.email,
+      phoneNumber: patient.phoneNumber,
+      status: patient.status,
     },
     heartRate: checkDnagerousHeartRateRanges(heartRate)
-      ? `${heartRate} ⚠️`
-      : heartRate,
+      ? `${heartRate} bpm ⚠️`
+      : `${heartRate} bpm`,
     bloodPressure: checkDangerousBloodPressureRanges(bloodPressure)
-      ? `${bloodPressure} ⚠️`
-      : bloodPressure,
+      ? `${bloodPressure} mmHg ⚠️`
+      : `${bloodPressure} mmHg`,
     temperature: checkDangerousTemperatureRanges(temperature)
-      ? `${temperature} ⚠️`
-      : temperature,
+      ? `${temperature} °C ⚠️`
+      : `${temperature} °C`,
   });
 
   test = await test.save();

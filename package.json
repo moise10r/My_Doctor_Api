@@ -33,6 +33,7 @@
     "mongoose": "^5.12.8",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.7",
-    "socket.io": "^4.2.0"
+    "socket.io": "^4.2.0",
+    "twilio": "^3.69.0"
   }
 }

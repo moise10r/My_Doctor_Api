@@ -165,7 +165,7 @@ router.put('/:id', [auth.verifyToken], async (req, res) => {
         gender,
         profileImage,
         status,
-        kitIdentifier,
+        kitIdentifier: kitIdentifier || user.kitIdentifier,
         streetNumber,
         city,
         country,

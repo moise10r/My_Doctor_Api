@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { verifyToken } = require('../middlewares/auth');
 const { Emergency, validateEmergency } = require('../models/emergency');
-// const sendMessage = require('../utils/sendMessages');
+const sendMessage = require('../utils/sendMessages');
 
 router.post('/', [verifyToken], async (req, res) => {
   let user = req.user;

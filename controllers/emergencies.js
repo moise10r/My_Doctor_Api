@@ -48,14 +48,14 @@ router.post('/', [verifyToken], async (req, res) => {
 
   socket.emit('new-emergency', emergency);
   res.send(emergency);
-  // sendMessage(
-  //   '+250780083122',
-  //   `An emergency alert was sent by the patient ${
-  //     user.name
-  //   } with the phone number: ${
-  //     user.phoneNumber ? user.phoneNumber : 'not specified'
-  //   }. Kindly go to your dashboard to see more details about the patient to locate him and assist him.`,
-  // );
+  sendMessage(
+    '+250780083122',
+    `An emergency alert was sent by the patient ${
+      user.name
+    } with the phone number: ${
+      user.phoneNumber ? user.phoneNumber : 'not specified'
+    }. Kindly go to your dashboard to see more details about the patient to locate him and assist him.`,
+  );
 });
 
 router.get('/', [verifyToken], async (req, res) => {

@@ -201,4 +201,11 @@ router.put('/:id', [auth.verifyToken], async (req, res) => {
 //make user Admin
 router.put('/:id/admin', [auth.verifyToken, admin], superAdmin.isSuperAdmin);
 
+router.get('/identifier/:id', async (req, res) => {
+  const kitIdentifier = req.params.id;
+  const user = await User.findOne({ kitIdentifier });
+  if (!user)
+    return res.status(404).send('The User with this ID was not found. ');
+  res.send(user);
+});
 module.exports = router;

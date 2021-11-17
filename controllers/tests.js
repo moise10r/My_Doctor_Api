@@ -12,6 +12,10 @@ router.post('/', async (req, res) => {
   const patient = await User.findOne({ kitIdentifier });
   if (!patient) return res.status(400).send('No user with that kitIdentifier');
 
+  if (patient.status === 'Pending' || patient.status === 'Inactive') {
+    return res.status(400).send('User is not active');
+  }
+
   const checkDnagerousHeartRateRanges = (heartRate) => {
     if (heartRate >= 140 || heartRate <= 90) return true;
     return false;

@@ -206,6 +206,10 @@ router.get('/identifier/:id', async (req, res) => {
   const user = await User.findOne({ kitIdentifier });
   if (!user)
     return res.status(404).send('The User with this ID was not found. ');
+  if (user.status === 'Pending' || user.status === 'Inactive') {
+    return res.status(400).send('User is not active');
+  }
+
   res.send(user);
 });
 module.exports = router;
